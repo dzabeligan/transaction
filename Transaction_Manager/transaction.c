@@ -175,7 +175,9 @@ bool is_same_day(int year, int month, int day, struct transaction *t)
  *********************************************************/
 bool is_greater_or_equal_day(int year, int month, int day, struct transaction *t)
 {
-  return t->year >= year && t->month >= month && t->day >= day;
+  return t->year > year 
+        || (t->year == year && t->month > month) 
+        || (t->year == year && t->month == month && t->day >= day);
 }
 
 /**********************************************************
@@ -185,7 +187,9 @@ bool is_greater_or_equal_day(int year, int month, int day, struct transaction *t
  *********************************************************/
 bool is_lesser_or_equal_day(int year, int month, int day, struct transaction *t)
 {
-  return t->year <= year && t->month <= month && t->day <= day;
+  return t->year < year 
+        || (t->year == year && t->month <= month) 
+        || (t->year == year && t->month == month && t->day <= day);
 }
 
 /*****************************************************
