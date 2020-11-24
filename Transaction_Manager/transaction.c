@@ -387,7 +387,6 @@ void get_transactions_by_date(void)
   if (transactions == NULL)
     cJSON_Delete(transactions);
 
-  print_types();
   printf("\nEnter date(DD/MM/YYYY): ");
   scanf(" %d/ %d/ %d", &day, &month, &year);
   int count = 0;
@@ -442,7 +441,6 @@ void get_transactions_by_date_range(void)
   if (transactions == NULL)
     cJSON_Delete(transactions);
 
-  print_types();
   printf("\nEnter start date(DD/MM/YYYY): ");
   scanf(" %d/ %d/ %d", &day1, &month1, &year1);
   printf("\nEnter end date(DD/MM/YYYY): ");
