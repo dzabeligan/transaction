@@ -390,6 +390,7 @@ void get_transactions_by_date(void)
   print_types();
   printf("\nEnter date(DD/MM/YYYY): ");
   scanf(" %d/ %d/ %d", &day, &month, &year);
+  int count = 0;
 
   for (t = first_transaction; t != NULL; t = t->next)
   {
@@ -401,14 +402,20 @@ void get_transactions_by_date(void)
       cJSON_AddNumberToObject(transaction, "month", t->month);
       cJSON_AddNumberToObject(transaction, "day", t->day);
       cJSON_AddStringToObject(transaction, "type", match_type(t->type));
+      count++;
     }
   }
 
   while (getchar() != '\n')
     ;
 
-  out = cJSON_Print(transactions);
-  printf(out);
+  if (count)
+  {
+    out = cJSON_Print(transactions);
+    printf(out);
+  }
+  else
+    printf("\nThere are no transactions matching this query.\n");
 
   free(out);
   cJSON_Delete(transactions);
@@ -440,6 +447,7 @@ void get_transactions_by_date_range(void)
   scanf(" %d/ %d/ %d", &day1, &month1, &year1);
   printf("\nEnter end date(DD/MM/YYYY): ");
   scanf(" %d/ %d/ %d", &day2, &month2, &year2);
+  int count = 0;
 
   for (t = first_transaction; t != NULL; t = t->next)
   {
@@ -451,14 +459,20 @@ void get_transactions_by_date_range(void)
       cJSON_AddNumberToObject(transaction, "month", t->month);
       cJSON_AddNumberToObject(transaction, "day", t->day);
       cJSON_AddStringToObject(transaction, "type", match_type(t->type));
+      count++;
     }
   }
 
   while (getchar() != '\n')
     ;
 
-  out = cJSON_Print(transactions);
-  printf(out);
+  if (count)
+  {
+    out = cJSON_Print(transactions);
+    printf(out);
+  }
+  else
+    printf("\nThere are no transactions matching this query.\n");
 
   free(out);
   cJSON_Delete(transactions);
@@ -486,6 +500,7 @@ void get_transactions_by_type(void)
   print_types();
   printf("\nEnter type: ");
   scanf(" %d", &type);
+  int count = 0;
 
   for (t = first_transaction; t != NULL; t = t->next)
   {
@@ -497,14 +512,20 @@ void get_transactions_by_type(void)
       cJSON_AddNumberToObject(transaction, "month", t->month);
       cJSON_AddNumberToObject(transaction, "day", t->day);
       cJSON_AddStringToObject(transaction, "type", match_type(t->type));
+      count++;
     }
   }
 
   while (getchar() != '\n')
     ;
 
-  out = cJSON_Print(transactions);
-  printf(out);
+  if (count)
+  {
+    out = cJSON_Print(transactions);
+    printf(out);
+  }
+  else
+    printf("\nThere are no transactions matching this query.\n");
 
   free(out);
   cJSON_Delete(transactions);
