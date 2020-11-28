@@ -27,4 +27,16 @@ struct transaction
   struct transaction *next;
 };
 
+/* prototypes */
+struct transaction *findTransactionByRRN(long rrn);
+void addTransaction(void);
+void getTransaction(void);
+void getTransactionByRRN(void);
+void getTransactionsByDate(void);
+void getTransactionsByDateRange(void);
+void getTransactionsByType(void);
+void updateTransaction(void);
+void deleteTransaction(void);
+void traverseTransaction(void);
+
 #endif // TRANSACTION_H
