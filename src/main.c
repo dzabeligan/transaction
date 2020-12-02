@@ -60,6 +60,7 @@ int CJSON_CDECL main(void)
 
     case 'x':
     case 'X':
+      freeTransaction();
       return 0;
 
     default:
