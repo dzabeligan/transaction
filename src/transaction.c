@@ -18,7 +18,7 @@ struct transaction *firstTransaction = NULL;
  *            transaction number is not found,       *
  *            returns NULL.                          *
  *****************************************************/
-struct transaction *findTransactionByRRN(long rrn)
+struct transaction *findTransactionByRRN(const long rrn)
 {
   static struct transaction *t;
 
@@ -57,8 +57,15 @@ void addTransaction(void)
   firstTransaction = new_transaction;
   new_transaction->previous = NULL;
 
+  long rrn;
+
   // TODO improve rrn generator
-  new_transaction->rrn = generateRRN();
+  do
+  {
+    rrn = generateRRN();
+  } while (findTransactionByRRN(rrn) != NULL);
+
+  new_transaction->rrn = rrn;
   cJSON_AddNumberToObject(transaction, "RRN", new_transaction->rrn);
 
   new_transaction->date = time(NULL);

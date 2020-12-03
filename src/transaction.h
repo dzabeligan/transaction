@@ -28,7 +28,6 @@ struct transaction
 };
 
 /* prototypes */
-struct transaction *findTransactionByRRN(long rrn);
 void freeTransaction(void);
 void addTransaction(void);
 void getTransaction(void);
