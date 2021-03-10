@@ -81,14 +81,14 @@ void addTransaction(void)
 
   printf("Select transaction type: ");
 
-  scanf(" %d", (int *) (&new_transaction->type));
+  scanf(" %d", (int *)(&new_transaction->type));
   cJSON_AddStringToObject(transaction, "type", matchType(new_transaction->type));
 
   while (getchar() != '\n')
     ;
 
   out = cJSON_Print(transaction);
-  printf(out);
+  printf("%s", out);
 
   free(out);
   cJSON_Delete(transaction);
@@ -98,7 +98,7 @@ void addTransaction(void)
  * freeTransaction: Frees memory allocated for            *   
  *                  transactions.                         *
  *********************************************************/
-void freeTransaction(void) 
+void freeTransaction(void)
 {
   while (firstTransaction != NULL)
   {
@@ -179,7 +179,7 @@ void getTransactionByRRN(void)
 {
   long rrn;
   struct transaction *t;
-  cJSON *transaction = NULL; 
+  cJSON *transaction = NULL;
   char *out = NULL;
 
   transaction = cJSON_CreateObject();
@@ -204,7 +204,7 @@ void getTransactionByRRN(void)
     ;
 
   out = cJSON_Print(transaction);
-  printf(out);
+  printf("%s", out);
 
   free(out);
   cJSON_Delete(transaction);
@@ -255,7 +255,7 @@ void getTransactionsByDate(void)
   if (count)
   {
     out = cJSON_Print(transactions);
-    printf(out);
+    printf("%s", out);
   }
   else
     printf("\nThere are no transactions matching this query.\n");
@@ -311,7 +311,7 @@ void getTransactionsByDateRange(void)
   if (count)
   {
     out = cJSON_Print(transactions);
-    printf(out);
+    printf("%s", out);
   }
   else
     printf("\nThere are no transactions matching this query.\n");
@@ -364,7 +364,7 @@ void getTransactionsByType(void)
   if (count)
   {
     out = cJSON_Print(transactions);
-    printf(out);
+    printf("%s", out);
   }
   else
     printf("\nThere are no transactions matching this query.\n");
@@ -403,7 +403,7 @@ void updateTransaction(void)
 
     printf("\nChange transaction type: ");
 
-    scanf(" %d", (int *) &t->type);
+    scanf(" %d", (int *)&t->type);
     cJSON_AddStringToObject(transaction, "type", matchType(t->type));
   }
   else
@@ -413,7 +413,7 @@ void updateTransaction(void)
     ;
 
   out = cJSON_Print(transaction);
-  printf(out);
+  printf("%s", out);
 
   free(out);
   cJSON_Delete(transaction);
@@ -490,7 +490,7 @@ void traverseTransaction(void)
     cJSON_AddStringToObject(transaction, "type", matchType(t->type));
 
     out = cJSON_Print(transaction);
-    printf(out);
+    printf("%s", out);
 
     free(out);
     cJSON_Delete(transaction);
