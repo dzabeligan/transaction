@@ -1,9 +1,8 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <time.h>
 
-#include "transaction.h"
-#include "utils.h"
+#include <transaction.h>
+#include <utils.h>
 
 /**********************************************************
  * isSameDay: Compares two dates. Returns true if dates *

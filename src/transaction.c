@@ -1,13 +1,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
-#include <time.h>
 
-#include "cJSON.h"
-#include "transaction.h"
-#include "utils.h"
+#include <cJSON.h>
+#include <transaction.h>
+#include <utils.h>
 
 struct transaction *firstTransaction = NULL;
 

@@ -1,6 +1,11 @@
 #ifndef TRANSACTION_H
 #define TRANSACTION_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <time.h>
 
 enum transactionType
@@ -38,5 +43,9 @@ void getTransactionsByType(void);
 void updateTransaction(void);
 void deleteTransaction(void);
 void traverseTransaction(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // TRANSACTION_H

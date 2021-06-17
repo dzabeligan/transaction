@@ -1,15 +1,17 @@
 #include <stdio.h>
 
-#include "cJSON.h"
-#include "transaction.h"
-#include "utils.h"
+#include <cJSON.h>
+#include <transaction.h>
+#include <utils.h>
+
+#include "minunit.h"
 
 /**********************************************************
  * main: Prompts the user to enter a command then         *
  *         executes it while in a continious loop         *
  *         Loop terminates when 'x' or 'X' key is pressed *
  *********************************************************/
-int CJSON_CDECL main(void)
+char * test()
 {
   printf("Commands\n");
   printCommand();
@@ -70,5 +72,15 @@ int CJSON_CDECL main(void)
     }
   }
 
-  return 0;
+  return NULL;
 }
+
+char *allTests() {
+  mu_suite_start();
+
+  mu_run_test(test);
+
+  return NULL;
+}
+
+RUN_TESTS(allTests);
