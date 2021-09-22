@@ -2,34 +2,31 @@
 #define TRANSACTION_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include <time.h>
 
-enum transactionType
-{
-  PURCHASE,
-  WITHDRAWAL,
-  DEPOSIT,
-  REFUND,
-  REVERSAL,
-  BALANCE_INQUIRY,
-  PAYMENTS,
-  INTER_ACCOUNT_TRANSFER,
+enum transactionType {
+    PURCHASE,
+    WITHDRAWAL,
+    DEPOSIT,
+    REFUND,
+    REVERSAL,
+    BALANCE_INQUIRY,
+    PAYMENTS,
+    INTER_ACCOUNT_TRANSFER,
 };
 
-struct transaction
-{
-  long rrn;
-  enum transactionType type;
-  time_t date;
-  int year;
-  int month;
-  int day;
-  struct transaction *previous;
-  struct transaction *next;
+struct transaction {
+    long rrn;
+    enum transactionType type;
+    time_t date;
+    int year;
+    int month;
+    int day;
+    struct transaction* previous;
+    struct transaction* next;
 };
 
 /* prototypes */

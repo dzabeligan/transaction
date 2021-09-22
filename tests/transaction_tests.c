@@ -11,76 +11,74 @@
  *         executes it while in a continious loop         *
  *         Loop terminates when 'x' or 'X' key is pressed *
  *********************************************************/
-char * test()
+char* test()
 {
-  printf("Commands\n");
-  printCommand();
+    printf("Commands\n");
+    printCommand();
 
-  char command;
+    for (;;) {
+        char command;
+        printf("\nPress key 'm' to see command menu.");
+        printf("\nEnter a command: ");
 
-  for (;;)
-  {
-    printf("\nPress key 'm' to see command menu.");
-    printf("\nEnter a command: ");
+        command = getchar();
 
-    command = getchar();
+        while (getchar() != '\n') /* skips to end of line */
+            ;
 
-    while (getchar() != '\n') /* skips to end of line */
-      ;
+        switch (command) {
+        case 'a':
+        case 'A':
+            addTransaction();
+            break;
 
-    switch (command)
-    {
-    case 'a':
-    case 'A':
-      addTransaction();
-      break;
+        case 'g':
+        case 'G':
+            getTransaction();
+            break;
 
-    case 'g':
-    case 'G':
-      getTransaction();
-      break;
+        case 't':
+        case 'T':
+            traverseTransaction();
+            break;
 
-    case 't':
-    case 'T':
-      traverseTransaction();
-      break;
+        case 'd':
+        case 'D':
+            deleteTransaction();
+            break;
 
-    case 'd':
-    case 'D':
-      deleteTransaction();
-      break;
+        case 'u':
+        case 'U':
+            updateTransaction();
+            break;
 
-    case 'u':
-    case 'U':
-      updateTransaction();
-      break;
+        case 'm':
+        case 'M':
+            printCommand();
+            break;
 
-    case 'm':
-    case 'M':
-      printCommand();
-      break;
+        case 'x':
+        case 'X':
+            freeTransaction();
+            return 0;
 
-    case 'x':
-    case 'X':
-      freeTransaction();
-      return 0;
-
-    default:
-      printCommand();
-      printf("\nInvalid command\n");
-      break;
+        default:
+            printCommand();
+            printf("\nInvalid command\n");
+            break;
+        }
     }
-  }
 
-  return NULL;
+    return NULL;
 }
 
-char *allTests() {
-  mu_suite_start();
+char* allTests()
+{
+    mu_suite_start();
 
-  mu_run_test(test);
+    mu_run_test(test);
 
-  return NULL;
+    return NULL;
 }
 
 RUN_TESTS(allTests);

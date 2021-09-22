@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +6,7 @@
 #include <transaction.h>
 #include <utils.h>
 
-struct transaction *firstTransaction = NULL;
+struct transaction* firstTransaction = NULL;
 
 /*****************************************************
  * findTransactionByRRN: Looks up a rrn in the    *
@@ -16,15 +15,13 @@ struct transaction *firstTransaction = NULL;
  *            transaction number is not found,       *
  *            returns NULL.                          *
  *****************************************************/
-struct transaction *findTransactionByRRN(const long rrn)
+struct transaction* findTransactionByRRN(const long rrn)
 {
-  static struct transaction *t;
+    static struct transaction* t;
 
-  for (t = firstTransaction;
-       t != NULL && rrn != t->rrn;
-       t = t->next)
-    ;
-  return t;
+    for (t = firstTransaction; t != NULL && rrn != t->rrn; t = t->next)
+        ;
+    return t;
 }
 
 /**********************************************************
@@ -37,73 +34,70 @@ struct transaction *findTransactionByRRN(const long rrn)
  *********************************************************/
 void addTransaction(void)
 {
-  struct transaction *new_transaction;
-  cJSON *transaction = NULL;
-  char *out = NULL;
+    struct transaction* new_transaction;
+    cJSON* transaction = NULL;
+    char* out = NULL;
 
-  new_transaction = malloc(sizeof(struct transaction));
-  if (new_transaction == NULL)
-  {
-    printf("\nDatabase is full; can't add more transactions.\n");
-    return;
-  }
-  transaction = cJSON_CreateObject();
+    new_transaction = malloc(sizeof(struct transaction));
+    if (new_transaction == NULL) {
+        printf("\nDatabase is full; can't add more transactions.\n");
+        return;
+    }
+    transaction = cJSON_CreateObject();
 
-  new_transaction->next = firstTransaction;
-  if (firstTransaction != NULL)
-    firstTransaction->previous = new_transaction;
-  firstTransaction = new_transaction;
-  new_transaction->previous = NULL;
+    new_transaction->next = firstTransaction;
+    if (firstTransaction != NULL)
+        firstTransaction->previous = new_transaction;
+    firstTransaction = new_transaction;
+    new_transaction->previous = NULL;
 
-  long rrn;
+    long rrn;
 
-  // TODO improve rrn generator
-  do
-  {
-    rrn = generateRRN();
-  } while (findTransactionByRRN(rrn) != NULL);
+    // TODO improve rrn generator
+    do {
+        rrn = generateRRN();
+    } while (findTransactionByRRN(rrn) != NULL);
 
-  new_transaction->rrn = rrn;
-  cJSON_AddNumberToObject(transaction, "RRN", new_transaction->rrn);
+    new_transaction->rrn = rrn;
+    cJSON_AddNumberToObject(transaction, "RRN", new_transaction->rrn);
 
-  new_transaction->date = time(NULL);
-  struct tm tm = *localtime(&new_transaction->date);
-  new_transaction->year = tm.tm_year + 1900;
-  cJSON_AddNumberToObject(transaction, "year", new_transaction->year);
-  new_transaction->month = tm.tm_mon + 1;
-  cJSON_AddNumberToObject(transaction, "month", new_transaction->month);
-  new_transaction->day = tm.tm_mday;
-  cJSON_AddNumberToObject(transaction, "day", new_transaction->day);
+    new_transaction->date = time(NULL);
+    struct tm tm = *localtime(&new_transaction->date);
+    new_transaction->year = tm.tm_year + 1900;
+    cJSON_AddNumberToObject(transaction, "year", new_transaction->year);
+    new_transaction->month = tm.tm_mon + 1;
+    cJSON_AddNumberToObject(transaction, "month", new_transaction->month);
+    new_transaction->day = tm.tm_mday;
+    cJSON_AddNumberToObject(transaction, "day", new_transaction->day);
 
-  printTypes();
+    printTypes();
 
-  printf("Select transaction type: ");
+    printf("Select transaction type: ");
 
-  scanf(" %d", (int *)(&new_transaction->type));
-  cJSON_AddStringToObject(transaction, "type", matchType(new_transaction->type));
+    scanf(" %d", (int*)(&new_transaction->type));
+    cJSON_AddStringToObject(transaction, "type", matchType(new_transaction->type));
 
-  while (getchar() != '\n')
-    ;
+    while (getchar() != '\n')
+        ;
 
-  out = cJSON_Print(transaction);
-  printf("%s", out);
+    out = cJSON_Print(transaction);
+    printf("%s", out);
 
-  free(out);
-  cJSON_Delete(transaction);
+    free(out);
+    cJSON_Delete(transaction);
 }
 
 /**********************************************************
- * freeTransaction: Frees memory allocated for            *   
+ * freeTransaction: Frees memory allocated for            *
  *                  transactions.                         *
  *********************************************************/
 void freeTransaction(void)
 {
-  while (firstTransaction != NULL)
-  {
-    struct transaction *currentTransaction = firstTransaction;
-    firstTransaction = firstTransaction->next;
-    free(currentTransaction);
-  }
+    while (firstTransaction != NULL) {
+        struct transaction* currentTransaction = firstTransaction;
+        firstTransaction = firstTransaction->next;
+        free(currentTransaction);
+    }
 }
 
 /**********************************************************
@@ -113,57 +107,54 @@ void freeTransaction(void)
  *********************************************************/
 void getTransaction(void)
 {
-  printGetCommand();
+    printGetCommand();
 
-  char command;
+    for (;;) {
+        char command;
+        printf("\nPress key 'm' to see command menu.");
+        printf("\nEnter how to get transaction: ");
 
-  for (;;)
-  {
-    printf("\nPress key 'm' to see command menu.");
-    printf("\nEnter how to get transaction: ");
+        command = getchar();
 
-    command = getchar();
+        while (getchar() != '\n') /* skips to end of line */
+            ;
 
-    while (getchar() != '\n') /* skips to end of line */
-      ;
+        switch (command) {
+        case '1':
+            getTransactionByRRN();
+            break;
 
-    switch (command)
-    {
-    case '1':
-      getTransactionByRRN();
-      break;
+        case '2':
+            getTransactionsByDate();
+            break;
 
-    case '2':
-      getTransactionsByDate();
-      break;
+        case '3':
+            getTransactionsByDateRange();
+            break;
 
-    case '3':
-      getTransactionsByDateRange();
-      break;
+        case '4':
+            getTransactionsByType();
+            break;
 
-    case '4':
-      getTransactionsByType();
-      break;
+        case 'm':
+        case 'M':
+            printGetCommand();
+            break;
 
-    case 'm':
-    case 'M':
-      printGetCommand();
-      break;
+        case 'q':
+        case 'Q':
+            return;
 
-    case 'q':
-    case 'Q':
-      return;
+        case 'x':
+        case 'X':
+            exit(EXIT_SUCCESS);
 
-    case 'x':
-    case 'X':
-      exit(EXIT_SUCCESS);
-
-    default:
-      printGetCommand();
-      printf("\nInvalid command\n");
-      break;
+        default:
+            printGetCommand();
+            printf("\nInvalid command\n");
+            break;
+        }
     }
-  }
 }
 
 /**********************************************************
@@ -175,37 +166,35 @@ void getTransaction(void)
  *********************************************************/
 void getTransactionByRRN(void)
 {
-  long rrn;
-  struct transaction *t;
-  cJSON *transaction = NULL;
-  char *out = NULL;
+    long rrn;
+    struct transaction* t;
+    cJSON* transaction = NULL;
+    char* out = NULL;
 
-  transaction = cJSON_CreateObject();
-  if (transaction == NULL)
+    transaction = cJSON_CreateObject();
+    if (transaction == NULL)
+        cJSON_Delete(transaction);
+
+    printf("Enter RRN: ");
+    scanf(" %ld", &rrn);
+    t = findTransactionByRRN(rrn);
+    if (t != NULL) {
+        cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
+        cJSON_AddNumberToObject(transaction, "year", t->year);
+        cJSON_AddNumberToObject(transaction, "month", t->month);
+        cJSON_AddNumberToObject(transaction, "day", t->day);
+        cJSON_AddStringToObject(transaction, "type", matchType(t->type));
+    } else
+        printf("\nTransaction not found.\n");
+
+    while (getchar() != '\n')
+        ;
+
+    out = cJSON_Print(transaction);
+    printf("%s", out);
+
+    free(out);
     cJSON_Delete(transaction);
-
-  printf("Enter RRN: ");
-  scanf(" %ld", &rrn);
-  t = findTransactionByRRN(rrn);
-  if (t != NULL)
-  {
-    cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
-    cJSON_AddNumberToObject(transaction, "year", t->year);
-    cJSON_AddNumberToObject(transaction, "month", t->month);
-    cJSON_AddNumberToObject(transaction, "day", t->day);
-    cJSON_AddStringToObject(transaction, "type", matchType(t->type));
-  }
-  else
-    printf("\nTransaction not found.\n");
-
-  while (getchar() != '\n')
-    ;
-
-  out = cJSON_Print(transaction);
-  printf("%s", out);
-
-  free(out);
-  cJSON_Delete(transaction);
 }
 
 /**********************************************************
@@ -217,49 +206,45 @@ void getTransactionByRRN(void)
  *********************************************************/
 void getTransactionsByDate(void)
 {
-  struct transaction *t;
-  int year;
-  int month;
-  int day;
-  cJSON *transactions = NULL;
-  cJSON *transaction = NULL;
-  char *out = NULL;
+    struct transaction* t;
+    int year;
+    int month;
+    int day;
+    cJSON* transactions = NULL;
+    cJSON* transaction = NULL;
+    char* out = NULL;
 
-  transactions = cJSON_CreateArray();
-  if (transactions == NULL)
-    cJSON_Delete(transactions);
+    transactions = cJSON_CreateArray();
+    if (transactions == NULL)
+        cJSON_Delete(transactions);
 
-  printf("\nEnter date(DD/MM/YYYY): ");
-  scanf(" %d/ %d/ %d", &day, &month, &year);
-  int count = 0;
+    printf("\nEnter date(DD/MM/YYYY): ");
+    scanf(" %d/ %d/ %d", &day, &month, &year);
+    int count = 0;
 
-  for (t = firstTransaction; t != NULL; t = t->next)
-  {
-    if (isSameDay(year, month, day, t))
-    {
-      cJSON_AddItemToArray(transactions, transaction = cJSON_CreateObject());
-      cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
-      cJSON_AddNumberToObject(transaction, "year", t->year);
-      cJSON_AddNumberToObject(transaction, "month", t->month);
-      cJSON_AddNumberToObject(transaction, "day", t->day);
-      cJSON_AddStringToObject(transaction, "type", matchType(t->type));
-      count++;
+    for (t = firstTransaction; t != NULL; t = t->next) {
+        if (isSameDay(year, month, day, t)) {
+            cJSON_AddItemToArray(transactions, transaction = cJSON_CreateObject());
+            cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
+            cJSON_AddNumberToObject(transaction, "year", t->year);
+            cJSON_AddNumberToObject(transaction, "month", t->month);
+            cJSON_AddNumberToObject(transaction, "day", t->day);
+            cJSON_AddStringToObject(transaction, "type", matchType(t->type));
+            count++;
+        }
     }
-  }
 
-  while (getchar() != '\n')
-    ;
+    while (getchar() != '\n')
+        ;
 
-  if (count)
-  {
-    out = cJSON_Print(transactions);
-    printf("%s", out);
-  }
-  else
-    printf("\nThere are no transactions matching this query.\n");
+    if (count) {
+        out = cJSON_Print(transactions);
+        printf("%s", out);
+    } else
+        printf("\nThere are no transactions matching this query.\n");
 
-  free(out);
-  cJSON_Delete(transactions);
+    free(out);
+    cJSON_Delete(transactions);
 }
 
 /**********************************************************
@@ -271,51 +256,48 @@ void getTransactionsByDate(void)
  *********************************************************/
 void getTransactionsByDateRange(void)
 {
-  struct transaction *t;
-  int startYear, endYear;
-  int startMonth, endMonth;
-  int startDay, endDay;
-  cJSON *transactions = NULL;
-  cJSON *transaction = NULL;
-  char *out = NULL;
+    struct transaction* t;
+    int startYear, endYear;
+    int startMonth, endMonth;
+    int startDay, endDay;
+    cJSON* transactions = NULL;
+    cJSON* transaction = NULL;
+    char* out = NULL;
 
-  transactions = cJSON_CreateArray();
-  if (transactions == NULL)
-    cJSON_Delete(transactions);
+    transactions = cJSON_CreateArray();
+    if (transactions == NULL)
+        cJSON_Delete(transactions);
 
-  printf("\nEnter start date(DD/MM/YYYY): ");
-  scanf(" %d/ %d/ %d", &startDay, &startMonth, &startYear);
-  printf("\nEnter end date(DD/MM/YYYY): ");
-  scanf(" %d/ %d/ %d", &endDay, &endMonth, &endYear);
-  int count = 0;
+    printf("\nEnter start date(DD/MM/YYYY): ");
+    scanf(" %d/ %d/ %d", &startDay, &startMonth, &startYear);
+    printf("\nEnter end date(DD/MM/YYYY): ");
+    scanf(" %d/ %d/ %d", &endDay, &endMonth, &endYear);
+    int count = 0;
 
-  for (t = firstTransaction; t != NULL; t = t->next)
-  {
-    if (isGreaterOrEqualDay(startYear, startMonth, startDay, t) && isLesserOrEqualDay(endYear, endMonth, endDay, t))
-    {
-      cJSON_AddItemToArray(transactions, transaction = cJSON_CreateObject());
-      cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
-      cJSON_AddNumberToObject(transaction, "year", t->year);
-      cJSON_AddNumberToObject(transaction, "month", t->month);
-      cJSON_AddNumberToObject(transaction, "day", t->day);
-      cJSON_AddStringToObject(transaction, "type", matchType(t->type));
-      count++;
+    for (t = firstTransaction; t != NULL; t = t->next) {
+        if (isGreaterOrEqualDay(startYear, startMonth, startDay, t)
+            && isLesserOrEqualDay(endYear, endMonth, endDay, t)) {
+            cJSON_AddItemToArray(transactions, transaction = cJSON_CreateObject());
+            cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
+            cJSON_AddNumberToObject(transaction, "year", t->year);
+            cJSON_AddNumberToObject(transaction, "month", t->month);
+            cJSON_AddNumberToObject(transaction, "day", t->day);
+            cJSON_AddStringToObject(transaction, "type", matchType(t->type));
+            count++;
+        }
     }
-  }
 
-  while (getchar() != '\n')
-    ;
+    while (getchar() != '\n')
+        ;
 
-  if (count)
-  {
-    out = cJSON_Print(transactions);
-    printf("%s", out);
-  }
-  else
-    printf("\nThere are no transactions matching this query.\n");
+    if (count) {
+        out = cJSON_Print(transactions);
+        printf("%s", out);
+    } else
+        printf("\nThere are no transactions matching this query.\n");
 
-  free(out);
-  cJSON_Delete(transactions);
+    free(out);
+    cJSON_Delete(transactions);
 }
 
 /**********************************************************
@@ -327,48 +309,46 @@ void getTransactionsByDateRange(void)
  *********************************************************/
 void getTransactionsByType(void)
 {
-  struct transaction *t;
-  enum transactionType type;
-  cJSON *transactions = NULL;
-  cJSON *transaction = NULL;
-  char *out = NULL;
+    struct transaction* t;
+    enum transactionType type;
+    cJSON* transactions = NULL;
+    cJSON* transaction = NULL;
+    char* out = NULL;
 
-  transactions = cJSON_CreateArray();
-  if (transactions == NULL)
-    cJSON_Delete(transactions);
-
-  printTypes();
-  printf("\nEnter type: ");
-  scanf(" %d", (int *)&type);
-  int count = 0;
-
-  for (t = firstTransaction; t != NULL; t = t->next)
-  {
-    if (type == t->type)
-    {
-      cJSON_AddItemToArray(transactions, transaction = cJSON_CreateObject());
-      cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
-      cJSON_AddNumberToObject(transaction, "year", t->year);
-      cJSON_AddNumberToObject(transaction, "month", t->month);
-      cJSON_AddNumberToObject(transaction, "day", t->day);
-      cJSON_AddStringToObject(transaction, "type", matchType(t->type));
-      count++;
+    transactions = cJSON_CreateArray();
+    if (transactions == NULL) {
+        cJSON_Delete(transactions);
+        return;
     }
-  }
 
-  while (getchar() != '\n')
-    ;
+    printTypes();
+    printf("\nEnter type: ");
+    scanf(" %d", (int*)&type);
+    int count = 0;
 
-  if (count)
-  {
-    out = cJSON_Print(transactions);
-    printf("%s", out);
-  }
-  else
-    printf("\nThere are no transactions matching this query.\n");
+    for (t = firstTransaction; t != NULL; t = t->next) {
+        if (type == t->type) {
+            cJSON_AddItemToArray(transactions, transaction = cJSON_CreateObject());
+            cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
+            cJSON_AddNumberToObject(transaction, "year", t->year);
+            cJSON_AddNumberToObject(transaction, "month", t->month);
+            cJSON_AddNumberToObject(transaction, "day", t->day);
+            cJSON_AddStringToObject(transaction, "type", matchType(t->type));
+            count++;
+        }
+    }
 
-  free(out);
-  cJSON_Delete(transactions);
+    while (getchar() != '\n')
+        ;
+
+    if (count) {
+        out = cJSON_Print(transactions);
+        printf("%s", out);
+    } else
+        printf("\nThere are no transactions matching this query.\n");
+
+    free(out);
+    cJSON_Delete(transactions);
 }
 
 /**********************************************************
@@ -380,41 +360,39 @@ void getTransactionsByType(void)
  *********************************************************/
 void updateTransaction(void)
 {
-  long rrn;
-  struct transaction *t;
-  cJSON *transaction = NULL;
-  char *out = NULL;
+    long rrn;
+    struct transaction* t;
+    cJSON* transaction = NULL;
+    char* out = NULL;
 
-  transaction = cJSON_CreateObject();
+    transaction = cJSON_CreateObject();
 
-  printf("Enter RRN: ");
-  scanf(" %ld", &rrn);
-  t = findTransactionByRRN(rrn);
-  if (t != NULL)
-  {
-    cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
-    cJSON_AddNumberToObject(transaction, "year", t->year);
-    cJSON_AddNumberToObject(transaction, "month", t->month);
-    cJSON_AddNumberToObject(transaction, "day", t->day);
+    printf("Enter RRN: ");
+    scanf(" %ld", &rrn);
+    t = findTransactionByRRN(rrn);
+    if (t != NULL) {
+        cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
+        cJSON_AddNumberToObject(transaction, "year", t->year);
+        cJSON_AddNumberToObject(transaction, "month", t->month);
+        cJSON_AddNumberToObject(transaction, "day", t->day);
 
-    printTypes();
+        printTypes();
 
-    printf("\nChange transaction type: ");
+        printf("\nChange transaction type: ");
 
-    scanf(" %d", (int *)&t->type);
-    cJSON_AddStringToObject(transaction, "type", matchType(t->type));
-  }
-  else
-    printf("\nTransaction not found.\n");
+        scanf(" %d", (int*)&t->type);
+        cJSON_AddStringToObject(transaction, "type", matchType(t->type));
+    } else
+        printf("\nTransaction not found.\n");
 
-  while (getchar() != '\n')
-    ;
+    while (getchar() != '\n')
+        ;
 
-  out = cJSON_Print(transaction);
-  printf("%s", out);
+    out = cJSON_Print(transaction);
+    printf("%s", out);
 
-  free(out);
-  cJSON_Delete(transaction);
+    free(out);
+    cJSON_Delete(transaction);
 }
 
 /**********************************************************
@@ -425,44 +403,41 @@ void updateTransaction(void)
  *********************************************************/
 void deleteTransaction(void)
 {
-  long rrn;
-  struct transaction *t;
+    long rrn;
+    struct transaction* t;
 
-  printf("Enter RRN: ");
-  scanf(" %ld", &rrn);
-  while (getchar() != '\n')
-    ;
-
-  t = findTransactionByRRN(rrn);
-  if (t != NULL)
-  {
-    char affirm;
-    printf("\nAre you sure you want to delete this transaction?\n y/n\n");
-    affirm = getchar();
-
+    printf("Enter RRN: ");
+    scanf(" %ld", &rrn);
     while (getchar() != '\n')
-      ;
+        ;
 
-    switch (affirm)
-    {
-    case 'y':
-    case 'Y':
-      if (t->previous != NULL)
-        t->previous->next = t->next;
+    t = findTransactionByRRN(rrn);
+    if (t != NULL) {
+        char affirm;
+        printf("\nAre you sure you want to delete this transaction?\n y/n\n");
+        affirm = getchar();
 
-      if (t->next != NULL)
-        t->next->previous = t->previous;
+        while (getchar() != '\n')
+            ;
 
-      free(t);
-      printf("\nTransaction deleted successfully.\n");
-      break;
+        switch (affirm) {
+        case 'y':
+        case 'Y':
+            if (t->previous != NULL)
+                t->previous->next = t->next;
 
-    default:
-      break;
-    }
-  }
-  else
-    printf("\nTransaction not found.\n");
+            if (t->next != NULL)
+                t->next->previous = t->previous;
+
+            free(t);
+            printf("\nTransaction deleted successfully.\n");
+            break;
+
+        default:
+            break;
+        }
+    } else
+        printf("\nTransaction not found.\n");
 }
 
 /**********************************************************
@@ -471,82 +446,76 @@ void deleteTransaction(void)
  *********************************************************/
 void traverseTransaction(void)
 {
-  struct transaction *t;
-  cJSON *transaction = NULL;
-  char *out = NULL;
-  char move;
-
-  transaction = cJSON_CreateObject();
-  t = firstTransaction;
-
-  if (t != NULL)
-  {
-    cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
-    cJSON_AddNumberToObject(transaction, "year", t->year);
-    cJSON_AddNumberToObject(transaction, "month", t->month);
-    cJSON_AddNumberToObject(transaction, "day", t->day);
-    cJSON_AddStringToObject(transaction, "type", matchType(t->type));
-
-    out = cJSON_Print(transaction);
-    printf("%s", out);
-
-    free(out);
-    cJSON_Delete(transaction);
-  }
-  else
-  {
-    printf("\nThere are no transactions recorded\n");
-    return;
-  }
-
-  for (;;)
-  {
-    printf("\n\nb - to move back, f - to move forward, m - to go back to menu\n");
-    printf("Enter command: ");
-    move = getchar();
-    while (getchar() != '\n') /* skips to end of line */
-      ;
-
-    switch (move)
-    {
-    case 'b':
-    case 'B':
-      if (t->previous != NULL)
-        t = t->previous;
-      else
-        printf("\nThis is the first element in the list\n\n");
-      break;
-
-    case 'f':
-    case 'F':
-      if (t->next != NULL)
-        t = t->next;
-      else
-        printf("\nThis is the last element in the list\n\n");
-      break;
-
-    case 'm':
-    case 'M':
-      return;
-
-    default:
-      printf("\nInvalid input\n");
-      break;
-    }
+    struct transaction* t;
+    cJSON* transaction = NULL;
+    char* out = NULL;
 
     transaction = cJSON_CreateObject();
-    if (t != NULL)
-    {
-      cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
-      cJSON_AddNumberToObject(transaction, "year", t->year);
-      cJSON_AddNumberToObject(transaction, "month", t->month);
-      cJSON_AddNumberToObject(transaction, "day", t->day);
-      cJSON_AddStringToObject(transaction, "type", matchType(t->type));
+    t = firstTransaction;
 
-      out = cJSON_Print(transaction);
-      printf("%s\n", out);
+    if (t != NULL) {
+        cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
+        cJSON_AddNumberToObject(transaction, "year", t->year);
+        cJSON_AddNumberToObject(transaction, "month", t->month);
+        cJSON_AddNumberToObject(transaction, "day", t->day);
+        cJSON_AddStringToObject(transaction, "type", matchType(t->type));
+
+        out = cJSON_Print(transaction);
+        printf("%s", out);
+
+        free(out);
+        cJSON_Delete(transaction);
+    } else {
+        printf("\nThere are no transactions recorded\n");
+        return;
     }
-    free(out);
-    cJSON_Delete(transaction);
-  }
+
+    for (;;) {
+        char move;
+        printf("\n\nb - to move back, f - to move forward, m - to go back to menu\n");
+        printf("Enter command: ");
+        move = getchar();
+        while (getchar() != '\n') /* skips to end of line */
+            ;
+
+        switch (move) {
+        case 'b':
+        case 'B':
+            if (t->previous != NULL)
+                t = t->previous;
+            else
+                printf("\nThis is the first element in the list\n\n");
+            break;
+
+        case 'f':
+        case 'F':
+            if (t->next != NULL)
+                t = t->next;
+            else
+                printf("\nThis is the last element in the list\n\n");
+            break;
+
+        case 'm':
+        case 'M':
+            return;
+
+        default:
+            printf("\nInvalid input\n");
+            break;
+        }
+
+        transaction = cJSON_CreateObject();
+        if (t != NULL) {
+            cJSON_AddNumberToObject(transaction, "RRN", t->rrn);
+            cJSON_AddNumberToObject(transaction, "year", t->year);
+            cJSON_AddNumberToObject(transaction, "month", t->month);
+            cJSON_AddNumberToObject(transaction, "day", t->day);
+            cJSON_AddStringToObject(transaction, "type", matchType(t->type));
+
+            out = cJSON_Print(transaction);
+            printf("%s\n", out);
+        }
+        free(out);
+        cJSON_Delete(transaction);
+    }
 }
